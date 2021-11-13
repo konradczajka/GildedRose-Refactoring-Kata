@@ -4,22 +4,22 @@ class GildedRose {
 
     Item[] items;
 
-    public GildedRose(Item[] items) {
+    GildedRose(Item[] items) {
         this.items = items;
     }
 
-    public void updateQuality() {
+    void updateQuality() {
         for (Item sourceItem : items) {
             var item = createItemForSale(sourceItem);
-            if (!item.name.equals("Aged Brie")
-                && !item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                if (!item.name.equals("Sulfuras, Hand of Ragnaros")) {
+            if (!(item instanceof AgedBrie)
+                && !(item instanceof BackstagePass)) {
+                if (!(item instanceof Sulfuras)) {
                     item.quality = item.quality.decreased();
                 }
             } else {
                 item.quality = item.quality.increased();
 
-                if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
+                if (item instanceof BackstagePass) {
                     if (item.sellIn < 11) {
                         item.quality = item.quality.increased();
                     }
@@ -30,14 +30,14 @@ class GildedRose {
                 }
             }
 
-            if (!item.name.equals("Sulfuras, Hand of Ragnaros")) {
+            if (!(item instanceof Sulfuras)) {
                 item.sellIn = item.sellIn - 1;
             }
 
             if (item.sellIn < 0) {
-                if (!item.name.equals("Aged Brie")) {
-                    if (!item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                        if (!item.name.equals("Sulfuras, Hand of Ragnaros")) {
+                if (!(item instanceof AgedBrie)) {
+                    if (!(item instanceof BackstagePass)) {
+                        if (!(item instanceof Sulfuras)) {
                             item.quality = item.quality.decreased();
                         }
                     } else {
@@ -48,25 +48,64 @@ class GildedRose {
                 }
             }
 
-            sourceItem.sellIn = item.sellIn;
-            sourceItem.quality = item.quality.value;
+            sourceItem.sellIn = item.sellIn();
+            sourceItem.quality = item.quality();
         }
     }
 
     private ItemForSale createItemForSale(Item item) {
-        return new ItemForSale(item.name, item.sellIn, item.quality);
+        return switch (item.name) {
+            case "Aged Brie" -> new AgedBrie(item.sellIn, new Quality(item.quality));
+            case "Sulfuras, Hand of Ragnaros" -> new Sulfuras(item.sellIn, new Quality(item.quality));
+            case "Backstage passes to a TAFKAL80ETC concert" -> new BackstagePass(item.sellIn, new Quality(item.quality));
+            default -> new RegularItem(item.sellIn, new Quality(item.quality));
+        };
     }
 
-    private static class ItemForSale {
+    private static abstract class ItemForSale {
 
-        final String name;
         int sellIn;
         Quality quality;
 
-        public ItemForSale(String name, int sellIn, int quality) {
-            this.name = name;
+        ItemForSale(int sellIn, Quality quality) {
             this.sellIn = sellIn;
-            this.quality = new Quality(quality);
+            this.quality = quality;
+        }
+
+        int sellIn() {
+            return sellIn;
+        }
+
+        int quality() {
+            return quality.value;
+        }
+    }
+
+    private static class RegularItem extends ItemForSale {
+
+        RegularItem(int sellIn, Quality quality) {
+            super(sellIn, quality);
+        }
+    }
+
+    private static class AgedBrie extends ItemForSale {
+
+        AgedBrie(int sellIn, Quality quality) {
+            super(sellIn, quality);
+        }
+    }
+
+    private static class Sulfuras extends ItemForSale {
+
+        Sulfuras(int sellIn, Quality quality) {
+            super(sellIn, quality);
+        }
+    }
+
+    private static class BackstagePass extends ItemForSale {
+
+        BackstagePass(int sellIn, Quality quality) {
+            super(sellIn, quality);
         }
     }
 
