@@ -8,7 +8,8 @@ class GildedRose {
     }
 
     public void updateQuality() {
-        for (Item item : items) {
+        for (Item sourceItem : items) {
+            var item = createItemForSale(sourceItem);
             if (!item.name.equals("Aged Brie")
                 && !item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
                 if (item.quality > 0) {
@@ -57,6 +58,25 @@ class GildedRose {
                     }
                 }
             }
+
+            sourceItem.sellIn = item.sellIn;
+            sourceItem.quality = item.quality;
+        }
+    }
+
+    private ItemForSale createItemForSale(Item item) {
+        return new ItemForSale(item.name, item.sellIn, item.quality);
+    }
+
+    private static class ItemForSale {
+        final String name;
+        int sellIn;
+        int quality;
+
+        public ItemForSale(String name, int sellIn, int quality) {
+            this.name = name;
+            this.sellIn = sellIn;
+            this.quality = quality;
         }
     }
 }
