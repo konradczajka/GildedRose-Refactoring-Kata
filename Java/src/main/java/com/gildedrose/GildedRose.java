@@ -109,13 +109,7 @@ class GildedRose {
         }
     }
 
-    private static final class Quality {
-
-        final int value;
-
-        Quality(int value) {
-            this.value = value;
-        }
+    private record Quality(int value) {
 
         Quality increased() {
             var newValue = Math.min(value + 1, 50);
@@ -132,12 +126,7 @@ class GildedRose {
         }
     }
 
-    private static final class SellInDate {
-        final int days;
-
-        public SellInDate(int days) {
-            this.days = days;
-        }
+    private record SellInDate(int days) {
 
         SellInDate decreased() {
             return new SellInDate(days - 1);
