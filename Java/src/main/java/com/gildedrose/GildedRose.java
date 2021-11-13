@@ -11,43 +11,46 @@ class GildedRose {
     void updateQuality() {
         for (Item sourceItem : items) {
             var item = createItemForSale(sourceItem);
-            if (!(item instanceof AgedBrie)
-                && !(item instanceof BackstagePass)) {
-                if (!(item instanceof Sulfuras)) {
-                    item.quality = item.quality.decreased();
-                }
+            if (item instanceof RegularItem r) {
+                item = r.atNextDay();
             } else {
-                item.quality = item.quality.increased();
-
-                if (item instanceof BackstagePass) {
-                    if (item.sellIn.days < 11) {
-                        item.quality = item.quality.increased();
-                    }
-
-                    if (item.sellIn.days < 6) {
-                        item.quality = item.quality.increased();
-                    }
-                }
-            }
-
-            if (!(item instanceof Sulfuras)) {
-                item.sellIn = item.sellIn.decreased();
-            }
-
-            if (item.sellIn.hasPassed()) {
-                if (!(item instanceof AgedBrie)) {
-                    if (!(item instanceof BackstagePass)) {
-                        if (!(item instanceof Sulfuras)) {
-                            item.quality = item.quality.decreased();
-                        }
-                    } else {
-                        item.quality = Quality.zero();
+                if (!(item instanceof AgedBrie)
+                    && !(item instanceof BackstagePass)) {
+                    if (!(item instanceof Sulfuras)) {
+                        item.quality = item.quality.decreased();
                     }
                 } else {
                     item.quality = item.quality.increased();
+
+                    if (item instanceof BackstagePass) {
+                        if (item.sellIn.days < 11) {
+                            item.quality = item.quality.increased();
+                        }
+
+                        if (item.sellIn.days < 6) {
+                            item.quality = item.quality.increased();
+                        }
+                    }
+                }
+
+                if (!(item instanceof Sulfuras)) {
+                    item.sellIn = item.sellIn.decreased();
+                }
+
+                if (item.sellIn.hasPassed()) {
+                    if (!(item instanceof AgedBrie)) {
+                        if (!(item instanceof BackstagePass)) {
+                            if (!(item instanceof Sulfuras)) {
+                                item.quality = item.quality.decreased();
+                            }
+                        } else {
+                            item.quality = Quality.zero();
+                        }
+                    } else {
+                        item.quality = item.quality.increased();
+                    }
                 }
             }
-
             sourceItem.sellIn = item.sellIn();
             sourceItem.quality = item.quality();
         }
@@ -85,6 +88,14 @@ class GildedRose {
 
         RegularItem(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
+        }
+
+        RegularItem atNextDay() {
+            var newSellIn = sellIn.decreased();
+            var newQuality = newSellIn.hasPassed()
+                             ? quality.decreased().decreased()
+                             : quality.decreased();
+            return new RegularItem(newSellIn, newQuality);
         }
     }
 
