@@ -17,32 +17,8 @@ class GildedRose {
                 item = a.atNextDay();
             } else if (item instanceof Sulfuras s) {
                 item = s.atNextDay();
-            } else {
-                if (!(item instanceof BackstagePass)) {
-                    item.quality = item.quality.decreased();
-                } else {
-                    item.quality = item.quality.increased();
-
-                    if (item instanceof BackstagePass) {
-                        if (item.sellIn.days < 11) {
-                            item.quality = item.quality.increased();
-                        }
-
-                        if (item.sellIn.days < 6) {
-                            item.quality = item.quality.increased();
-                        }
-                    }
-                }
-
-                item.sellIn = item.sellIn.decreased();
-
-                if (item.sellIn.hasPassed()) {
-                    if (!(item instanceof BackstagePass)) {
-                        item.quality = item.quality.decreased();
-                    } else {
-                        item.quality = Quality.zero();
-                    }
-                }
+            } else if (item instanceof BackstagePass b) {
+                item = b.atNextDay();
             }
             sourceItem.sellIn = item.sellIn();
             sourceItem.quality = item.quality();
@@ -85,9 +61,10 @@ class GildedRose {
 
         RegularItem atNextDay() {
             var newSellIn = sellIn.decreased();
-            var newQuality = newSellIn.hasPassed()
-                             ? quality.decreased().decreased()
-                             : quality.decreased();
+            var newQuality = quality.decreased();
+            if (newSellIn.hasPassed()) {
+                newQuality = newQuality.decreased();
+            }
             return new RegularItem(newSellIn, newQuality);
         }
     }
@@ -100,9 +77,10 @@ class GildedRose {
 
         AgedBrie atNextDay() {
             var newSellIn = sellIn.decreased();
-            var newQuality = newSellIn.hasPassed()
-                             ? quality.increased().increased()
-                             : quality.increased();
+            var newQuality = quality.increased();
+            if (newSellIn.hasPassed()) {
+                newQuality = newQuality.increased();
+            }
             return new AgedBrie(newSellIn, newQuality);
         }
     }
@@ -122,6 +100,22 @@ class GildedRose {
 
         BackstagePass(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
+        }
+
+        BackstagePass atNextDay() {
+            var newSellIn = sellIn.decreased();
+            if (sellIn.hasPassed()) {
+                return new BackstagePass(newSellIn, Quality.zero());
+            }
+
+            var newQuality = quality.increased();
+            if (sellIn.days <= 10) {
+                newQuality = newQuality.increased();
+            }
+            if (sellIn.days <= 5) {
+                newQuality = newQuality.increased();
+            }
+            return new BackstagePass(newSellIn, newQuality);
         }
     }
 
