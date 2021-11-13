@@ -15,11 +15,11 @@ class GildedRose {
                 item = r.atNextDay();
             } else if (item instanceof AgedBrie a) {
                 item = a.atNextDay();
+            } else if (item instanceof Sulfuras s) {
+                item = s.atNextDay();
             } else {
                 if (!(item instanceof BackstagePass)) {
-                    if (!(item instanceof Sulfuras)) {
-                        item.quality = item.quality.decreased();
-                    }
+                    item.quality = item.quality.decreased();
                 } else {
                     item.quality = item.quality.increased();
 
@@ -34,15 +34,11 @@ class GildedRose {
                     }
                 }
 
-                if (!(item instanceof Sulfuras)) {
-                    item.sellIn = item.sellIn.decreased();
-                }
+                item.sellIn = item.sellIn.decreased();
 
                 if (item.sellIn.hasPassed()) {
                     if (!(item instanceof BackstagePass)) {
-                        if (!(item instanceof Sulfuras)) {
-                            item.quality = item.quality.decreased();
-                        }
+                        item.quality = item.quality.decreased();
                     } else {
                         item.quality = Quality.zero();
                     }
@@ -115,6 +111,10 @@ class GildedRose {
 
         Sulfuras(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
+        }
+
+        Sulfuras atNextDay() {
+            return this;
         }
     }
 
