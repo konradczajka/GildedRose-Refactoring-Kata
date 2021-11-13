@@ -28,8 +28,8 @@ class GildedRose {
 
     private static abstract class ItemForSale {
 
-        SellInDate sellIn;
-        Quality quality;
+        final SellInDate sellIn;
+        final Quality quality;
 
         ItemForSale(SellInDate sellIn, Quality quality) {
             this.sellIn = sellIn;
@@ -47,7 +47,7 @@ class GildedRose {
         abstract ItemForSale atNextDay();
     }
 
-    private static class RegularItem extends ItemForSale {
+    private static final class RegularItem extends ItemForSale {
 
         RegularItem(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
@@ -64,7 +64,7 @@ class GildedRose {
         }
     }
 
-    private static class AgedBrie extends ItemForSale {
+    private static final class AgedBrie extends ItemForSale {
 
         AgedBrie(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
@@ -81,7 +81,7 @@ class GildedRose {
         }
     }
 
-    private static class Sulfuras extends ItemForSale {
+    private static final class Sulfuras extends ItemForSale {
 
         Sulfuras(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
@@ -93,7 +93,7 @@ class GildedRose {
         }
     }
 
-    private static class BackstagePass extends ItemForSale {
+    private static final class BackstagePass extends ItemForSale {
 
         BackstagePass(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
@@ -117,7 +117,7 @@ class GildedRose {
         }
     }
 
-    private static class ConjuredItem extends ItemForSale {
+    private static final class ConjuredItem extends ItemForSale {
 
         ConjuredItem(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
