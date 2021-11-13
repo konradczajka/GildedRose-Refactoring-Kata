@@ -10,16 +10,7 @@ class GildedRose {
 
     void updateQuality() {
         for (Item sourceItem : items) {
-            var item = createItemForSale(sourceItem);
-            if (item instanceof RegularItem r) {
-                item = r.atNextDay();
-            } else if (item instanceof AgedBrie a) {
-                item = a.atNextDay();
-            } else if (item instanceof Sulfuras s) {
-                item = s.atNextDay();
-            } else if (item instanceof BackstagePass b) {
-                item = b.atNextDay();
-            }
+            var item = createItemForSale(sourceItem).atNextDay();
             sourceItem.sellIn = item.sellIn();
             sourceItem.quality = item.quality();
         }
@@ -51,6 +42,8 @@ class GildedRose {
         int quality() {
             return quality.value;
         }
+
+        abstract ItemForSale atNextDay();
     }
 
     private static class RegularItem extends ItemForSale {
@@ -59,6 +52,7 @@ class GildedRose {
             super(sellIn, quality);
         }
 
+        @Override
         RegularItem atNextDay() {
             var newSellIn = sellIn.decreased();
             var newQuality = quality.decreased();
@@ -75,6 +69,7 @@ class GildedRose {
             super(sellIn, quality);
         }
 
+        @Override
         AgedBrie atNextDay() {
             var newSellIn = sellIn.decreased();
             var newQuality = quality.increased();
@@ -91,6 +86,7 @@ class GildedRose {
             super(sellIn, quality);
         }
 
+        @Override
         Sulfuras atNextDay() {
             return this;
         }
@@ -102,6 +98,7 @@ class GildedRose {
             super(sellIn, quality);
         }
 
+        @Override
         BackstagePass atNextDay() {
             var newSellIn = sellIn.decreased();
             if (sellIn.hasPassed()) {
