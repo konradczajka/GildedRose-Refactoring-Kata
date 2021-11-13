@@ -20,21 +20,21 @@ class GildedRose {
                 item.quality = item.quality.increased();
 
                 if (item instanceof BackstagePass) {
-                    if (item.sellIn < 11) {
+                    if (item.sellIn.days < 11) {
                         item.quality = item.quality.increased();
                     }
 
-                    if (item.sellIn < 6) {
+                    if (item.sellIn.days < 6) {
                         item.quality = item.quality.increased();
                     }
                 }
             }
 
             if (!(item instanceof Sulfuras)) {
-                item.sellIn = item.sellIn - 1;
+                item.sellIn = item.sellIn.decreased();
             }
 
-            if (item.sellIn < 0) {
+            if (item.sellIn.hasPassed()) {
                 if (!(item instanceof AgedBrie)) {
                     if (!(item instanceof BackstagePass)) {
                         if (!(item instanceof Sulfuras)) {
@@ -55,25 +55,25 @@ class GildedRose {
 
     private ItemForSale createItemForSale(Item item) {
         return switch (item.name) {
-            case "Aged Brie" -> new AgedBrie(item.sellIn, new Quality(item.quality));
-            case "Sulfuras, Hand of Ragnaros" -> new Sulfuras(item.sellIn, new Quality(item.quality));
-            case "Backstage passes to a TAFKAL80ETC concert" -> new BackstagePass(item.sellIn, new Quality(item.quality));
-            default -> new RegularItem(item.sellIn, new Quality(item.quality));
+            case "Aged Brie" -> new AgedBrie(new SellInDate(item.sellIn), new Quality(item.quality));
+            case "Sulfuras, Hand of Ragnaros" -> new Sulfuras(new SellInDate(item.sellIn), new Quality(item.quality));
+            case "Backstage passes to a TAFKAL80ETC concert" -> new BackstagePass(new SellInDate(item.sellIn), new Quality(item.quality));
+            default -> new RegularItem(new SellInDate(item.sellIn), new Quality(item.quality));
         };
     }
 
     private static abstract class ItemForSale {
 
-        int sellIn;
+        SellInDate sellIn;
         Quality quality;
 
-        ItemForSale(int sellIn, Quality quality) {
+        ItemForSale(SellInDate sellIn, Quality quality) {
             this.sellIn = sellIn;
             this.quality = quality;
         }
 
         int sellIn() {
-            return sellIn;
+            return sellIn.days;
         }
 
         int quality() {
@@ -83,28 +83,28 @@ class GildedRose {
 
     private static class RegularItem extends ItemForSale {
 
-        RegularItem(int sellIn, Quality quality) {
+        RegularItem(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
         }
     }
 
     private static class AgedBrie extends ItemForSale {
 
-        AgedBrie(int sellIn, Quality quality) {
+        AgedBrie(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
         }
     }
 
     private static class Sulfuras extends ItemForSale {
 
-        Sulfuras(int sellIn, Quality quality) {
+        Sulfuras(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
         }
     }
 
     private static class BackstagePass extends ItemForSale {
 
-        BackstagePass(int sellIn, Quality quality) {
+        BackstagePass(SellInDate sellIn, Quality quality) {
             super(sellIn, quality);
         }
     }
@@ -129,6 +129,22 @@ class GildedRose {
 
         static Quality zero() {
             return new Quality(0);
+        }
+    }
+
+    private static final class SellInDate {
+        final int days;
+
+        public SellInDate(int days) {
+            this.days = days;
+        }
+
+        SellInDate decreased() {
+            return new SellInDate(days - 1);
+        }
+
+        boolean hasPassed() {
+            return days < 0;
         }
     }
 }
