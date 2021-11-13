@@ -21,7 +21,7 @@ class GildedRoseTest {
         }
 
         @Test
-        void loosesQualityTwiceAsFastAthTheSellDate() {
+        void loosesQualityTwiceAsFastAtTheSellDate() {
             var item = new Item("Regular Item", 0, 20);
 
             new GildedRose(new Item[]{item}).updateQuality();
@@ -220,6 +220,60 @@ class GildedRoseTest {
 
             assertThat(item.quality).isEqualTo(50);
             assertThat(item.sellIn).isEqualTo(0);
+        }
+    }
+
+    @Nested
+    class ConjuredItem {
+
+        @Test
+        void loosesQualityTwiceAsFastAndSellInEachDay() {
+            var item = new Item("Conjured", 10, 20);
+
+            new GildedRose(new Item[]{item}).updateQuality();
+
+            assertThat(item.quality).isEqualTo(18);
+            assertThat(item.sellIn).isEqualTo(9);
+        }
+
+        @Test
+        void loosesQualityFourTimesAsFastAtTheSellDate() {
+            var item = new Item("Conjured", 0, 20);
+
+            new GildedRose(new Item[]{item}).updateQuality();
+
+            assertThat(item.quality).isEqualTo(16);
+            assertThat(item.sellIn).isEqualTo(-1);
+        }
+
+        @Test
+        void loosesQualityFourTimesAsFastOnceSellByDateHasPassed() {
+            var item = new Item("Conjured", -1, 20);
+
+            new GildedRose(new Item[]{item}).updateQuality();
+
+            assertThat(item.quality).isEqualTo(16);
+            assertThat(item.sellIn).isEqualTo(-2);
+        }
+
+        @Test
+        void neverReachesNegativeQualityBeforeTheSellDate() {
+            var item = new Item("Conjured", 10, 0);
+
+            new GildedRose(new Item[]{item}).updateQuality();
+
+            assertThat(item.quality).isEqualTo(0);
+            assertThat(item.sellIn).isEqualTo(9);
+        }
+
+        @Test
+        void neverReachesNegativeQualityAfterTheSellDate() {
+            var item = new Item("Conjured", -1, 1);
+
+            new GildedRose(new Item[]{item}).updateQuality();
+
+            assertThat(item.quality).isEqualTo(0);
+            assertThat(item.sellIn).isEqualTo(-2);
         }
     }
 }

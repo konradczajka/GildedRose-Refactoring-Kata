@@ -21,6 +21,7 @@ class GildedRose {
             case "Aged Brie" -> new AgedBrie(new SellInDate(item.sellIn), new Quality(item.quality));
             case "Sulfuras, Hand of Ragnaros" -> new Sulfuras(new SellInDate(item.sellIn), new Quality(item.quality));
             case "Backstage passes to a TAFKAL80ETC concert" -> new BackstagePass(new SellInDate(item.sellIn), new Quality(item.quality));
+            case "Conjured" -> new ConjuredItem(new SellInDate(item.sellIn), new Quality(item.quality));
             default -> new RegularItem(new SellInDate(item.sellIn), new Quality(item.quality));
         };
     }
@@ -113,6 +114,23 @@ class GildedRose {
                 newQuality = newQuality.increased();
             }
             return new BackstagePass(newSellIn, newQuality);
+        }
+    }
+
+    private static class ConjuredItem extends ItemForSale {
+
+        ConjuredItem(SellInDate sellIn, Quality quality) {
+            super(sellIn, quality);
+        }
+
+        @Override
+        ConjuredItem atNextDay() {
+            var newSellIn = sellIn.decreased();
+            var newQuality = quality.decreased().decreased();
+            if (newSellIn.hasPassed()) {
+                newQuality = newQuality.decreased().decreased();
+            }
+            return new ConjuredItem(newSellIn, newQuality);
         }
     }
 
