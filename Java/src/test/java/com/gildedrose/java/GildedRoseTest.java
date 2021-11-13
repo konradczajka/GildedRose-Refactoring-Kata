@@ -1,4 +1,4 @@
-package com.gildedrose;
+package com.gildedrose.java;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
